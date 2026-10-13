@@ -1,0 +1,749 @@
+@import 'tailwindcss';
+
+/* ------------------------------------------------------------------ palette
+ * Static brand values. Anything that has to change between themes is defined
+ * further down as a CSS variable override, not here.
+ */
+@theme {
+  --color-ink-950: #05060d;
+  --color-ink-900: #0a0c18;
+  --color-ink-800: #12142a;
+
+  --color-brand-300: #c4b5fd;
+  --color-brand-400: #a78bfa;
+  --color-brand-500: #8b5cf6;
+  --color-brand-600: #7c3aed;
+
+  --color-live-400: #34d399;
+  --color-live-500: #10b981;
+  --color-warn-400: #fbbf24;
+  --color-warn-500: #f59e0b;
+  --color-danger-400: #fb7185;
+  --color-danger-500: #f43f5e;
+  --color-info-400: #22d3ee;
+
+  --radius-glass: 1.25rem;
+
+  /* Expo-out. Everything that moves uses this so the whole UI decelerates alike. */
+  --ease-glass: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ------------------------------------------------------------------ themes
+ *
+ * Both themes are declared as variable overrides on the root element, which the
+ * bootstrap script in index.html stamps before first paint. Two groups matter:
+ *
+ *   1. Glass tokens — the blur, tint, rim and shadow that make up a panel.
+ *   2. The slate ramp — redefined rather than replaced, so `text-slate-100`
+ *      keeps meaning "strongest text" in both themes and no component markup
+ *      has to change to support the light one.
+ */
+:root,
+:root[data-theme='dark'] {
+  color-scheme: dark;
+
+  --app-bg: #05060d;
+  --app-text: #e2e8f0;
+
+  /* Glass recipe: tint, hairline, rim highlight, drop shadow, blur, saturation. */
+  --glass-bg: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.085) 0%,
+    rgba(255, 255, 255, 0.045) 42%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-rim: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.06) 34%,
+    rgba(255, 255, 255, 0) 62%,
+    rgba(255, 255, 255, 0.16) 100%
+  );
+  --glass-shadow:
+    0 18px 50px -18px rgba(2, 4, 16, 0.85),
+    0 2px 10px -4px rgba(2, 4, 16, 0.6);
+  --glass-highlight: rgba(255, 255, 255, 0.14);
+  --glass-blur: 26px;
+  --glass-sat: 165%;
+
+  --glass-strong-bg: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.07) 45%,
+    rgba(255, 255, 255, 0.045) 100%
+  );
+  --glass-strong-border: rgba(255, 255, 255, 0.16);
+  --glass-strong-blur: 34px;
+
+  --inset-bg: rgba(255, 255, 255, 0.045);
+  --inset-border: rgba(255, 255, 255, 0.075);
+
+  --field-bg: rgba(8, 10, 24, 0.55);
+  --field-border: rgba(255, 255, 255, 0.13);
+
+  --btn-bg: rgba(255, 255, 255, 0.07);
+  --btn-border: rgba(255, 255, 255, 0.14);
+  --btn-hover: rgba(255, 255, 255, 0.13);
+
+  /* The single accent the whole app is built on. */
+  --accent: 139 92 246;
+  --accent-text: #ffffff;
+  --accent-soft: rgba(139, 92, 246, 0.18);
+
+  --rail-bg: rgba(255, 255, 255, 0.045);
+  --rail-border: rgba(255, 255, 255, 0.08);
+
+  --aurora-1: rgba(139, 92, 246, 0.32);
+  --aurora-2: rgba(34, 211, 238, 0.18);
+  --aurora-3: rgba(236, 72, 153, 0.18);
+  --aurora-4: rgba(16, 185, 129, 0.14);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+
+  --app-bg: #eef1f7;
+  --app-text: #0f172a;
+
+  /* Glass over a bright backdrop reads as white frost rather than a dark tint. */
+  --glass-bg: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.82) 0%,
+    rgba(255, 255, 255, 0.62) 45%,
+    rgba(255, 255, 255, 0.5) 100%
+  );
+  --glass-border: rgba(15, 23, 42, 0.08);
+  --glass-rim: linear-gradient(
+    150deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.3) 34%,
+    rgba(255, 255, 255, 0) 62%,
+    rgba(15, 23, 42, 0.06) 100%
+  );
+  --glass-shadow:
+    0 18px 44px -20px rgba(15, 23, 42, 0.3),
+    0 2px 8px -4px rgba(15, 23, 42, 0.14);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
+  --glass-blur: 24px;
+  --glass-sat: 180%;
+
+  --glass-strong-bg: linear-gradient(
+    155deg,
+    rgba(255, 255, 255, 0.95) 0%,
+    rgba(255, 255, 255, 0.78) 45%,
+    rgba(255, 255, 255, 0.66) 100%
+  );
+  --glass-strong-border: rgba(15, 23, 42, 0.1);
+  --glass-strong-blur: 30px;
+
+  --inset-bg: rgba(15, 23, 42, 0.035);
+  --inset-border: rgba(15, 23, 42, 0.07);
+
+  --field-bg: rgba(255, 255, 255, 0.85);
+  --field-border: rgba(15, 23, 42, 0.14);
+
+  --btn-bg: rgba(255, 255, 255, 0.75);
+  --btn-border: rgba(15, 23, 42, 0.1);
+  --btn-hover: rgba(255, 255, 255, 0.95);
+
+  --accent: 109 40 217;
+  --accent-text: #ffffff;
+  --accent-soft: rgba(109, 40, 217, 0.12);
+
+  --rail-bg: rgba(255, 255, 255, 0.7);
+  --rail-border: rgba(15, 23, 42, 0.08);
+
+  --aurora-1: rgba(139, 92, 246, 0.2);
+  --aurora-2: rgba(34, 211, 238, 0.16);
+  --aurora-3: rgba(236, 72, 153, 0.12);
+  --aurora-4: rgba(16, 185, 129, 0.12);
+
+  /* The slate ramp inverted: slate-100 stays "strongest text", slate-500 stays
+     "dimmest", so every existing utility class keeps its intent. Values are
+     picked for at least 4.5:1 against the light glass. */
+  --color-slate-100: #0f172a;
+  --color-slate-200: #1e293b;
+  --color-slate-300: #334155;
+  --color-slate-400: #475569;
+  --color-slate-500: #64748b;
+  --color-slate-600: #94a3b8;
+  --color-white: #0b1220;
+
+  /* Status hues darkened until they clear 4.5:1 on a bright surface. */
+  --color-brand-300: #6d28d9;
+  --color-brand-400: #7c3aed;
+  --color-live-400: #047857;
+  --color-warn-400: #b45309;
+  --color-danger-400: #be123c;
+  --color-info-400: #0e7490;
+
+  --color-ink-950: #f8fafc;
+}
+
+/* ------------------------------------------------------------------ base */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    background-color: var(--app-bg);
+    color: var(--app-text);
+    font-family:
+      ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /*
+   * The aurora wash the frosted panels are read against. Fixed and behind
+   * everything so panels blur a stationary backdrop while content scrolls.
+   */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(60rem 40rem at 12% -10%, var(--aurora-1), transparent 60%),
+      radial-gradient(48rem 34rem at 88% 6%, var(--aurora-2), transparent 62%),
+      radial-gradient(52rem 40rem at 72% 92%, var(--aurora-3), transparent 62%),
+      radial-gradient(44rem 34rem at 8% 88%, var(--aurora-4), transparent 62%);
+    transition: background 400ms var(--ease-glass);
+  }
+
+  /* Tabular figures keep bid columns from jittering as amounts change. */
+  .nums {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  ::selection {
+    background: rgb(var(--accent) / 0.35);
+  }
+
+  *:focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+    border-radius: 0.5rem;
+  }
+}
+
+/* ------------------------------------------------------------------ glass */
+@layer components {
+  /*
+   * A panel is four layers: a tinted fill, a blurred and saturated backdrop, a
+   * hairline border, and a gradient rim drawn in ::after that catches light on
+   * the top-left and fades out — which is what stops the panel reading as a
+   * flat translucent rectangle.
+   */
+  .glass,
+  .glass-strong {
+    position: relative;
+    border-radius: var(--radius-glass);
+    box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
+    transition:
+      background 300ms var(--ease-glass),
+      border-color 300ms var(--ease-glass),
+      box-shadow 300ms var(--ease-glass);
+  }
+
+  .glass::after,
+  .glass-strong::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: var(--glass-rim);
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .glass {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+  }
+
+  .glass-strong {
+    background: var(--glass-strong-bg);
+    border: 1px solid var(--glass-strong-border);
+    backdrop-filter: blur(var(--glass-strong-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-strong-blur)) saturate(var(--glass-sat));
+  }
+
+  /* Nested surface: no blur of its own — it sits on already-blurred glass. */
+  .glass-inset {
+    background: var(--inset-bg);
+    border: 1px solid var(--inset-border);
+    border-radius: 0.9rem;
+    transition:
+      background 240ms var(--ease-glass),
+      border-color 240ms var(--ease-glass);
+  }
+
+  /* ---------------------------------------------------------- controls
+   *
+   * One button shape, one accent. Fills are flat tints rather than two-stop
+   * gradients, so a row of buttons reads as one material with different
+   * meanings instead of a strip of separate colours.
+   */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.1rem;
+    border-radius: 0.85rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.2;
+    border: 1px solid var(--btn-border);
+    background: var(--btn-bg);
+    color: inherit;
+    cursor: pointer;
+    backdrop-filter: blur(12px) saturate(150%);
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    box-shadow: inset 0 1px 0 var(--glass-highlight);
+    transition:
+      transform 160ms var(--ease-glass),
+      background-color 200ms var(--ease-glass),
+      border-color 200ms var(--ease-glass),
+      box-shadow 200ms var(--ease-glass);
+  }
+
+  .btn:hover:not(:disabled) {
+    background: var(--btn-hover);
+    transform: translateY(-1px);
+  }
+
+  .btn:active:not(:disabled) {
+    transform: translateY(0) scale(0.985);
+  }
+
+  .btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* The single core button: one accent colour, no gradient. */
+  .btn-primary {
+    background: rgb(var(--accent) / 0.9);
+    border-color: rgb(var(--accent) / 0.55);
+    color: var(--accent-text);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.28),
+      0 8px 24px -10px rgb(var(--accent) / 0.85);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    background: rgb(var(--accent) / 1);
+  }
+
+  .btn-live,
+  .btn-warn,
+  .btn-danger {
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.24);
+  }
+
+  .btn-live {
+    background: rgba(5, 150, 105, 0.92);
+    border-color: rgba(16, 185, 129, 0.5);
+  }
+
+  .btn-live:hover:not(:disabled) {
+    background: rgba(5, 150, 105, 1);
+  }
+
+  .btn-warn {
+    background: rgba(180, 83, 9, 0.92);
+    border-color: rgba(245, 158, 11, 0.5);
+  }
+
+  .btn-warn:hover:not(:disabled) {
+    background: rgba(180, 83, 9, 1);
+  }
+
+  .btn-danger {
+    background: rgba(190, 18, 60, 0.92);
+    border-color: rgba(244, 63, 94, 0.5);
+  }
+
+  .btn-danger:hover:not(:disabled) {
+    background: rgba(190, 18, 60, 1);
+  }
+
+  .btn-sm {
+    padding: 0.38rem 0.7rem;
+    font-size: 0.78rem;
+    border-radius: 0.65rem;
+  }
+
+  /* ---------------------------------------------------------- side rail
+   *
+   * One shape for every destination. The active item is the same glass with the
+   * accent behind it — no per-item colour, so the rail never turns into a row
+   * of unrelated buttons.
+   */
+  .rail-btn {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.95rem;
+    border: 1px solid transparent;
+    color: var(--color-slate-400);
+    background: transparent;
+    cursor: pointer;
+    transition:
+      background 220ms var(--ease-glass),
+      color 220ms var(--ease-glass),
+      border-color 220ms var(--ease-glass),
+      transform 220ms var(--ease-glass);
+  }
+
+  .rail-btn:hover {
+    background: var(--inset-bg);
+    border-color: var(--inset-border);
+    color: var(--color-slate-100);
+  }
+
+  .rail-btn[aria-current='page'] {
+    background: var(--accent-soft);
+    border-color: rgb(var(--accent) / 0.45);
+    color: var(--color-slate-100);
+    box-shadow: inset 0 1px 0 var(--glass-highlight);
+  }
+
+  /* Accent tab marking the active destination. Offset lands it just inside the
+     rail's own edge — the rail is 4rem wide and the button 2.75rem, so the gap
+     either side is 0.625rem. */
+  .rail-btn[aria-current='page']::before {
+    content: '';
+    position: absolute;
+    left: -0.5rem;
+    top: 50%;
+    height: 1.15rem;
+    width: 3px;
+    border-radius: 999px;
+    background: rgb(var(--accent));
+    transform: translateY(-50%);
+  }
+
+  /* On the phone rail the destinations sit in a row, so a left tab would read as
+     belonging to the previous item. Underline it instead. */
+  .rail-row .rail-btn[aria-current='page']::before {
+    left: 50%;
+    top: auto;
+    bottom: -0.3rem;
+    height: 3px;
+    width: 1.15rem;
+    transform: translateX(-50%);
+  }
+
+  /*
+   * The strip behind the sticky header. Content scrolling underneath would
+   * otherwise show through the gap above the header panel; this frosts that gap
+   * and fades the frost out, so rows dissolve rather than being sliced off.
+   */
+  .header-veil::before {
+    content: '';
+    position: absolute;
+    inset: -1px 0 0 0;
+    pointer-events: none;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+    mask-image: linear-gradient(to bottom, #000 62%, transparent 100%);
+  }
+
+  /* ---------------------------------------------------------- photo zoom
+   *
+   * A thumbnail small enough for a dense list is too small to recognise a face in, so
+   * hovering one lifts the full picture out over the row. The panel is rendered up front
+   * and only revealed, so the image is already decoded when it appears — showing it on
+   * demand would mean a visible blank frame on the first hover of every player.
+   */
+  .photo-zoom {
+    position: relative;
+    display: inline-flex;
+    outline: none;
+  }
+
+  .photo-zoom-panel {
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    z-index: 40;
+    display: grid;
+    justify-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem;
+    border-radius: 1rem;
+    /* Without this an absolutely-positioned box shrinks to the space left of the viewport
+       edge, which squashes the picture in any right-hand column. */
+    width: max-content;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 0.4rem) scale(0.94);
+    transform-origin: bottom center;
+    transition:
+      opacity 180ms var(--ease-glass),
+      transform 180ms var(--ease-glass),
+      visibility 180ms;
+    pointer-events: none;
+  }
+
+  /* :focus rather than :focus-visible — the panel is the whole point of focusing the
+     thumbnail, so it should open however focus arrived. */
+  .photo-zoom:hover .photo-zoom-panel,
+  .photo-zoom:focus .photo-zoom-panel,
+  .photo-zoom:focus-within .photo-zoom-panel {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0) scale(1);
+  }
+
+  .photo-zoom-panel img {
+    width: 12rem;
+    height: 12rem;
+    border-radius: 0.75rem;
+    object-fit: cover;
+  }
+
+  .photo-zoom-name {
+    max-width: 12rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    color: var(--color-slate-100);
+  }
+
+  /* Touch has no hover, and a panel that appears on tap would fight the row's own tap
+     target. Keyboard focus still opens it. */
+  @media (hover: none) {
+    .photo-zoom:hover .photo-zoom-panel {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+
+  .field {
+    width: 100%;
+    padding: 0.65rem 0.9rem;
+    border-radius: 0.85rem;
+    background: var(--field-bg);
+    border: 1px solid var(--field-border);
+    color: inherit;
+    font-size: 0.9rem;
+    transition:
+      border-color 200ms var(--ease-glass),
+      background-color 200ms var(--ease-glass),
+      box-shadow 200ms var(--ease-glass);
+  }
+
+  .field::placeholder {
+    color: var(--color-slate-500);
+  }
+
+  .field:focus {
+    border-color: rgb(var(--accent));
+    box-shadow: 0 0 0 3px rgb(var(--accent) / 0.18);
+    outline: none;
+  }
+
+  .field-label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--color-slate-400);
+  }
+
+  /* ---------------------------------------------------------- pills */
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+
+  .pill-live {
+    background: color-mix(in srgb, var(--color-live-400) 16%, transparent);
+    border-color: color-mix(in srgb, var(--color-live-400) 42%, transparent);
+    color: var(--color-live-400);
+  }
+
+  .pill-warn {
+    background: color-mix(in srgb, var(--color-warn-400) 16%, transparent);
+    border-color: color-mix(in srgb, var(--color-warn-400) 42%, transparent);
+    color: var(--color-warn-400);
+  }
+
+  .pill-danger {
+    background: color-mix(in srgb, var(--color-danger-400) 16%, transparent);
+    border-color: color-mix(in srgb, var(--color-danger-400) 42%, transparent);
+    color: var(--color-danger-400);
+  }
+
+  .pill-brand {
+    background: rgb(var(--accent) / 0.16);
+    border-color: rgb(var(--accent) / 0.42);
+    color: var(--color-brand-300);
+  }
+
+  .pill-info {
+    background: color-mix(in srgb, var(--color-info-400) 16%, transparent);
+    border-color: color-mix(in srgb, var(--color-info-400) 42%, transparent);
+    color: var(--color-info-400);
+  }
+
+  .pill-pink {
+    background: rgba(219, 39, 119, 0.14);
+    border-color: rgba(219, 39, 119, 0.4);
+    color: #db2777;
+  }
+
+  .pill-muted {
+    background: var(--inset-bg);
+    border-color: var(--inset-border);
+    color: var(--color-slate-300);
+  }
+
+  .section-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-slate-400);
+  }
+}
+
+:root[data-theme='dark'] .pill-pink {
+  background: rgba(244, 114, 182, 0.16);
+  border-color: rgba(244, 114, 182, 0.42);
+  color: #f9a8d4;
+}
+
+/* ------------------------------------------------------------------ motion */
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Lights the team column a sold player just landed in. Uses the accent so it reads the
+   same in both themes, and fades rather than blinks. */
+@keyframes team-flash {
+  0% {
+    box-shadow: 0 0 0 0 rgb(var(--accent) / 0);
+    transform: scale(1);
+  }
+  22% {
+    box-shadow: 0 0 0 3px rgb(var(--accent) / 0.75);
+    transform: scale(1.025);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgb(var(--accent) / 0);
+    transform: scale(1);
+  }
+}
+
+.animate-team-flash {
+  animation: team-flash 1600ms ease-out both;
+}
+
+/* A cheer drifting up out of the reaction bar. */
+@keyframes float-up {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.6);
+  }
+  15% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-84px) scale(0.9);
+  }
+}
+
+.animate-float-up {
+  animation: float-up 2.2s ease-out both;
+}
+
+@keyframes flash-bid {
+  0% {
+    background-color: rgb(var(--accent) / 0.3);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+.animate-pulse-ring {
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+.animate-rise-in {
+  animation: rise-in 300ms var(--ease-glass) both;
+}
+
+.animate-flash-bid {
+  animation: flash-bid 1.1s var(--ease-glass) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-ring,
+  .animate-rise-in,
+  .animate-flash-bid,
+  .animate-team-flash,
+  .animate-float-up {
+    animation: none;
+  }
+
+  .btn:hover:not(:disabled),
+  .btn:active:not(:disabled) {
+    transform: none;
+  }
+}

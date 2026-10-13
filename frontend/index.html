@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#05060d" />
+    <title>Auction Room</title>
+    <script>
+      // Stamped before first paint so a light-theme user never sees a dark flash.
+      // Mirrors the resolution order in src/theme/ThemeContext.tsx.
+      (function () {
+        try {
+          var saved = localStorage.getItem('auction.theme')
+          var mode = saved === 'dark' || saved === 'light' ? saved : null
+          var system = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+          document.documentElement.dataset.theme = mode || system
+        } catch (error) {
+          document.documentElement.dataset.theme = 'dark'
+        }
+      })()
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
